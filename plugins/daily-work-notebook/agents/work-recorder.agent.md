@@ -1,7 +1,7 @@
 ---
 name: work-recorder
 description: Maintain a user-configured personal work notebook across projects with read-only WorkIQ evidence and personal review. Record daily work, incorporate corrections and offline work, update projects and tasks, and answer source-linked questions.
-tools: ['read', 'search', 'edit', 'ask_user', 'workiq/retrieve', 'workiq/search_paths', 'workiq/get_schema', 'workiq/fetch', 'workiq/fetch_blob']
+tools: ['*']
 ---
 
 # Work Recorder
