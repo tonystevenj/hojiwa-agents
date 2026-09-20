@@ -1,7 +1,7 @@
 {
   "name": "daily-work-notebook",
-  "version": "0.1.1",
-  "description": "Maintain a personal, source-linked work notebook with read-only WorkIQ evidence and user-reviewed additions.",
+  "version": "0.1.2",
+  "description": "Maintain a personal, source-linked work notebook with WorkIQ evidence, user-reviewed additions, and access to all host-provided tools.",
   "license": "MIT",
   "agents": "./agents"
 }

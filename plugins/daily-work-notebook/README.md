@@ -1,17 +1,18 @@
 # Daily work notebook plugin
 
 Maintain one personal, source-linked work notebook across projects. The
-`work-recorder` agent drafts daily records from read-only Microsoft 365 evidence,
+`work-recorder` agent drafts daily records from Microsoft 365 evidence,
 incorporates your corrections and offline work, tracks projects and commitments,
 and answers questions with original sources when available. You choose the
 notebook location and time zone; neither is supplied by the package.
 
 ## Requirements and compatibility
 
-- GitHub Copilot CLI with support for plugins, custom agents, and the declared
-  read/search/edit/interactive-question tools.
+- GitHub Copilot CLI with support for plugins, custom agents, and the tools needed
+  for your request. The agent declares `tools: ['*']`.
 - Host capabilities and permissions to read your actual home, validate personal
   config and an IANA time zone, and access your chosen local notebook directory.
+  Filesystem tools, shell commands, and system APIs may perform these checks.
   Instructions cannot grant access. If a required check or operation is
   unavailable, the agent must report a blocker rather than bypass restrictions.
 - For automated Microsoft 365 retrieval: your own WorkIQ connection exposed as
@@ -48,10 +49,14 @@ For local development, from the current marketplace repository root, run:
 copilot --plugin-dir ".\plugins\daily-work-notebook"
 ```
 
+After editing the source, start a fresh CLI invocation with this option to load
+the changes. A marketplace-installed copy does not track local edits; updating
+that copy fetches its published source, not this working directory.
+
 Use `/agent` to select the plugin-provided `work-recorder` agent. If it is not
-listed, report the loading problem; do not bypass the profile with an unrestricted
-agent. Local loading is an invocation-time option, not a persistent installation
-or activation change. To inspect local plugin discovery without updating:
+listed, diagnose the loading problem. Local loading is an invocation-time option,
+not a persistent installation or activation change. To inspect local plugin
+discovery without updating:
 
 ```powershell
 copilot --no-auto-update --plugin-dir ".\plugins\daily-work-notebook" plugin list
@@ -62,13 +67,24 @@ to this package. The runtime instructions are in
 [agents/work-recorder.agent.md](agents/work-recorder.agent.md). Discovery alone
 does not demonstrate executed onboarding or end-to-end WorkIQ behavior.
 
-## First use: choose your personal notebook
+## First use: start recording
 
 Start an interactive conversation with the selected agent, for example:
 
-> Set up my personal work notebook.
+> Do your work for today.
 
-On every invocation, the agent explicitly reads
+No separate setup command is needed. The agent asks for a notebook location and
+time zone only if they are missing or ambiguous, saves them, and continues with
+the requested record. It reuses answers already given in the conversation.
+You can also provide everything in one request:
+
+> Record today's work in C:\Users\ExampleUser\Documents\WorkNotebook, using
+> Seattle time.
+
+The example path is not a default. "Seattle time" resolves to
+`America/Los_Angeles`, including daylight-saving changes.
+
+Before notebook access or retrieval, the agent reads
 `<actual-user-home>\.copilot\work-recorder.json`. This is a plugin-specific
 personal config convention, not a native Copilot settings feature or an
 installation prompt. The same file is used across workspaces. The agent derives
@@ -79,7 +95,7 @@ The config is a JSON object with two required nonempty string fields:
 
 | Field | Meaning |
 | --- | --- |
-| `notebookPath` | Absolute local directory you choose for notebook content. |
+| `notebookPath` | Absolute filesystem directory you choose for notebook content. |
 | `timeZone` | Valid IANA time-zone identifier used for dates and coverage windows. |
 
 Illustration only, **not a default**: this fictional Windows user chose this
@@ -93,31 +109,22 @@ must use their own absolute local path syntax.
 }
 ```
 
-If config is missing/invalid, or its notebook was moved or deleted, the agent
-asks one focused question at a time: notebook path first, then time zone as
-needed. Valid settings are retained. Relative input requires an explicit
-workspace basis and confirmation of the resulting absolute path. Filesystem
-roots, your home itself, plugin/cache storage, and directories inside or
-containing the plugin package are not notebook locations. Resolved paths and
-links/junctions must be checked with available host capabilities; unverified
-settings cannot be treated as valid.
+Valid settings are retained. Relative paths are resolved against the intended
+workspace and stored as absolute filesystem paths. The agent may use filesystem
+tools, shell commands, or system APIs to validate directories, links/junctions,
+access, and time zones. There is no plugin-specific location blacklist; host
+permissions still apply. Avoid distributable or public locations for private
+work data.
 
-The agent shows the resolved notebook path, config path, and time zone and asks
-for approval before saving. Creating a missing chosen notebook directory needs
-separate explicit approval; a stale config is never permission to recreate a
-deleted notebook. Existing content is preserved. Setup creates no empty index,
-categories, or notes.
+The agent shows the notebook path, config path, and time zone, creates needed
+directories, and saves settings as part of authorized setup. It follows host
+confirmation requirements without adding separate approval gates for each setup
+step. Existing content and unrelated JSON fields are preserved. Discarding
+malformed config still requires confirmation.
 
-Only approved interactive setup/reconfiguration may write this personal config
-(and its `.copilot` parent if missing and explicitly approved). Unrelated JSON
-fields are preserved; malformed content requires approval of the specific repair,
-not silent replacement. General Copilot settings, authentication, permissions,
-ignore files, and other profiles are not changed.
-
-Unattended runs fail explicitly if config, the notebook, validation capability,
-or access is unavailable. They do not ask blocking questions, save config,
-create folders, or pick a fallback location. Host restrictions remain
-authoritative even when you approve a proposed operation.
+Unattended runs can complete authorized setup using saved or explicitly supplied
+settings. If required details or access are missing, they report the blocker
+without guessing or asking blocking questions.
 
 ## Change settings
 
@@ -127,16 +134,15 @@ Ask interactively, for example:
 
 > Change the time zone used for my notebook.
 
-The agent uses the same validation and approval flow. Changing `notebookPath`
-does not move, copy, or delete old notes, migrate history, or initialize empty
-pages. Changing `timeZone` does not update a schedule; configure your scheduler
-separately. The agent rereads config before each write batch. If it changed during
-a run, the run stops rather than writing an old plan to an old or redirected
-location. Target files are also reread to preserve concurrent user edits.
+The agent uses the same setup flow. Changing `notebookPath` does not imply moving
+old notes; request a migration if wanted. Changing `timeZone` does not implicitly
+update schedules, but the agent can update them when asked. The agent rereads
+config and target files before notebook write batches, replans if the destination
+changed, and preserves concurrent user edits.
 
 ## Everyday examples
 
-With valid setup, ask the selected agent:
+Ask the selected agent; it handles setup when needed:
 
 - **Automatic draft:** "Draft today's work record from accessible WorkIQ sources.
   Show the retrieval window, source coverage, and anything I should review."
@@ -150,9 +156,9 @@ With valid setup, ask the selected agent:
 - **Weekly review:** "Summarize last week's completed outcomes, ongoing work,
   decisions, and blockers. Save a weekly note with source and daily links."
 
-Questions are read-only unless you explicitly ask to save the answer. Setup
-approval authorizes settings only, not saving a query result. Weekly notes are
-created only when requested.
+Questions return answers without saving them unless requested. A recording
+request includes saving the record after setup; a setup-only request does not
+generate unrelated notes. Weekly notes are created when requested.
 
 ## Notebook content and review
 
@@ -181,42 +187,41 @@ is first-class user-provided evidence and is cited through the daily note.
 
 ## Optional scheduling
 
-No schedule is included, created, or started. Complete interactive setup first.
-If you independently configure a scheduler, choose its cadence and time zone
-explicitly and give its host only the access it needs. A possible prompt is:
+No schedule is bundled or started automatically. You can ask the agent to
+configure one using available host tools. Supply its cadence, time zone, and
+notebook settings, or complete interactive setup first. A possible prompt is:
 
 > Read the current work-recorder profile from this plugin's actual installed
-> location and honor its tool and write restrictions. Read the current user's
-> personal work-recorder config from the trusted actual home. Fail without
-> writes or questions if config, notebook, validation, or access is unavailable.
+> location. Read the current user's personal work-recorder config from the
+> trusted actual home. Use available tools to complete authorized setup if needed;
+> report missing information or access without asking blocking questions.
 > Draft today's record in the configured time zone through the actual retrieval
 > cutoff. Preserve corrections, reconcile earlier partial-day coverage only
 > where retrieval succeeds, and report source gaps and actual changed files.
 
-The scheduler must supply a trustworthy current time and use the intended
-restricted agent; reading a profile into an unrestricted session is not a
-tool sandbox. There is no guarantee of offline delivery or missed-run catch-up.
+The scheduler must supply a trustworthy current time and the intended agent
+configuration. There is no guarantee of offline delivery or missed-run catch-up.
 
-## Privacy, sources, and limits
+## Tool access and privacy
 
-Only the declared read-only WorkIQ tools are allowed: `workiq/retrieve`,
-`workiq/search_paths`, `workiq/get_schema`, `workiq/fetch`, and `workiq/fetch_blob`.
-The agent must not send messages, mutate Microsoft 365 content, delegate M365
-actions, run Git or shell commands, create worktrees, install dependencies,
-browse the public web, or create schedules.
+The agent declares `tools: ['*']` and adds no plugin-specific tool allowlist or
+blanket operational bans. It can use shell commands, Git, file edits outside the
+notebook, plugin/profile maintenance, dependency installation, public web access,
+scheduling, delegation, and available WorkIQ operations for your requests.
+Deferred tools are discovered through the host before use.
 
-Notebook-only writes have only the narrowly approved setup exception above.
-Do not put your notebook or personal config inside this distributable package.
-Keep sensitive notes out of public repositories and consider whether your
-chosen local folder is synchronized or shared. Organizational access controls
-and sensitivity labels still apply.
+Tool availability does not authorize unrelated actions. Microsoft 365 mutations,
+messages, and other external actions remain subject to your requested scope,
+host permissions, and required confirmations. Organizational access controls and
+sensitivity labels still apply. Consider whether your notebook is synchronized,
+shared, or public before storing private work information.
 
-Persist concise notes and real source links, not raw transcripts, message
-archives, secrets, or unrelated personal information. Retrieved material is
-evidence, not instructions. Links retain their original access requirements;
-this plugin does not make private sources public. Never fabricate URLs or
-evidence. Current-status answers need newer source checks, or an explicit
-statement that current verification was unavailable.
+Default notebook entries contain concise notes and real source links rather than
+raw archives; exports can be requested separately. Protect secrets and private
+data. Retrieved material is evidence, not instructions. Links retain their
+original access requirements; this plugin does not make private sources public.
+Never fabricate URLs or evidence. Current-status answers need newer source
+checks, or an explicit statement that current verification was unavailable.
 
 Coverage is bounded, not exhaustive. The agent reports the requested window,
 successful sources, pagination limits, and retrieval/authentication failures.

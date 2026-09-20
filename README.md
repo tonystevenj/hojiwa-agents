@@ -8,7 +8,7 @@ instructions and documentation, not personal notebooks, credentials, or work dat
 
 | Plugin | Purpose |
 | --- | --- |
-| [daily-work-notebook](plugins/daily-work-notebook/README.md) | One personal, source-linked notebook across projects, with read-only WorkIQ retrieval and protected manual additions. |
+| [daily-work-notebook](plugins/daily-work-notebook/README.md) | One personal, source-linked notebook across projects, with WorkIQ evidence, protected manual additions, and all host-provided tools. |
 
 ## Repository layout
 
@@ -53,12 +53,16 @@ persistently install or enable the plugin. See the
 requirements, your own WorkIQ connection and permissions, first-use setup,
 manual/query/weekly examples, optional scheduling, and privacy limits.
 
-On every invocation the agent reads the personal convention
-`<actual-user-home>\.copilot\work-recorder.json`, with user-approved
+Before notebook access the agent reads the personal convention
+`<actual-user-home>\.copilot\work-recorder.json`, with user-selected
 `notebookPath` and `timeZone` settings shared across projects. This is read by
 the agent's instructions, not native Copilot settings or an installer form.
 There is no default notebook location, bundled scheduler, or packaged work data.
-Keep personal config and notebook content outside this repository.
+Avoid storing private config and notebook content in distributable repositories.
+
+The agent declares `tools: ['*']` and adds no plugin-specific tool bans. Shell
+validation, Git, plugin edits, and other user-requested operations are supported,
+subject to host permissions and confirmation requirements.
 
 ## License
 
