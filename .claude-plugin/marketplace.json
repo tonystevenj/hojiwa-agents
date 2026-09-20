@@ -1,0 +1,14 @@
+{
+  "name": "hojiwa-agents",
+  "owner": {
+    "name": "tonystevenj",
+    "url": "https://github.com/tonystevenj"
+  },
+  "plugins": [
+    {
+      "name": "daily-work-notebook",
+      "description": "Daily work records grounded in WorkIQ sources and personal review.",
+      "source": "./plugins/daily-work-notebook"
+    }
+  ]
+}
