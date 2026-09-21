@@ -1,10 +1,11 @@
 # Daily work notebook plugin
 
 Maintain one personal, source-linked work notebook across projects. The
-`work-recorder` agent drafts daily records from Microsoft 365 evidence,
-incorporates your corrections and offline work, tracks projects and commitments,
-and answers questions with original sources when available. You choose the
-notebook location and time zone; neither is supplied by the package.
+`work-recorder` agent drafts concise daily records and next-day stand-up updates
+from Microsoft 365 evidence, incorporates your corrections and offline work,
+tracks projects and commitments, and answers questions with original sources
+when available. You choose the notebook location and time zone; neither is
+supplied by the package.
 
 ## Requirements and compatibility
 
@@ -144,8 +145,8 @@ changed, and preserves concurrent user edits.
 
 Ask the selected agent; it handles setup when needed:
 
-- **Automatic draft:** "Draft today's work record from accessible WorkIQ sources.
-  Show the retrieval window, source coverage, and anything I should review."
+- **Automatic draft:** "Draft today's work record from accessible WorkIQ sources."
+- **Later update:** "Update today's record with any work since the earlier run."
 - **Manual entry:** "Record my offline design review today. We proposed reducing
   the retry limit, but no implementation was completed."
 - **Correction:** "Correct today's note: I investigated the failure; I did not
@@ -158,7 +159,8 @@ Ask the selected agent; it handles setup when needed:
 
 Questions return answers without saving them unless requested. A recording
 request includes saving the record after setup; a setup-only request does not
-generate unrelated notes. Weekly notes are created when requested.
+generate unrelated notes. Daily recording also drafts the next day's stand-up;
+ask for "summary only" to skip it. Weekly notes are created when requested.
 
 ## Notebook content and review
 
@@ -167,7 +169,7 @@ only files justified by content, relative to your chosen notebook root:
 
 | Path | Purpose |
 | --- | --- |
-| `daily\YYYY-MM-DD.md` | Primary daily record, coverage, review state, additions and corrections. |
+| `daily\YYYY-MM-DD.md` | Daily summary, next-day stand-up draft, coverage, review state, and corrections. |
 | `projects\<project-slug>.md` | Relevant cross-day context, decisions, and status. |
 | `tasks.md` | Explicit commitments with supporting daily/source links. |
 | `weekly\YYYY-Www.md` | Requested weekly summaries. |
@@ -177,30 +179,67 @@ only files justified by content, relative to your chosen notebook root:
 Manual additions and corrections are protected from automatic overwrites.
 Only your explicit confirmation marks a note reviewed. Substantive automatic
 additions to reviewed notes need review again without replacing reviewed
-material. Evidence is deduplicated; a rerun with nothing substantive to add
-makes no edits, including no timestamp-only or log-only changes.
+material. Each date has one record: later runs update that file and merge its
+existing sections, rather than creating another summary. A 9 PM run adds late
+work to the same record written at 5 PM. Earlier supported work is retained
+even if a later search does not return it. The stand-up draft is also updated
+in place.
+
+Evidence is deduplicated; a rerun with nothing substantive to add makes no
+edits, including no timestamp-only or log-only changes. Explicit requests to
+revise formatting or wording still apply.
+
+Daily notes scale with actual work, not the number of sources searched. Aim for
+3-5 short work bullets on a typical active day, fewer on a quiet day, with source
+links instead of lengthy explanations. Keep one compact Coverage line. If
+neither existing content nor new evidence supports work, "Automatic work summary"
+stays blank, without a no-work disclaimer. Empty optional sections, routine
+retrieval diagnostics, counts, and generic review questions are omitted.
+Actual retrieval failures or truncation still receive a brief warning; detailed
+diagnostics are available on request.
+
+**Admin reminders** holds personally relevant device compliance, badge renewal,
+and account/access renewal notices. Each reminder is a short linked label, such
+as "Device compliance notice - review needed", with a deadline when useful.
+These are not work accomplishments, commitments, or blockers unless evidence
+establishes that status; a notice alone does not create a task.
 
 Sources support what they actually say, not assumed completion or attendance.
 An invitation is not proof of attending a meeting. Reported facts, hypotheses,
 proposals, ongoing work, and completed outcomes remain distinct. Offline work
 is first-class user-provided evidence and is cited through the daily note.
 
+## Next-day stand-up
+
+Daily recording, whether automatic or manual, includes a ready-to-paste
+stand-up draft in the same note under "Stand-up for YYYY-MM-DD". It targets the
+next calendar day after the recorded day, or after the last day of an explicitly
+grouped period. Specify another date or ask for "summary only" to override this.
+
+Use 1-3 short bullets for supported progress, explicit next steps, and real
+blockers, in your voice with source links. Empty categories and admin reminders
+are omitted; plans and "no blockers" claims are never invented. If there is
+nothing supported to say, no stand-up section is added. Reruns update the same
+draft and target date while preserving your edits. Drafting does not send or
+post the update.
+
 ## Optional scheduling
 
 No schedule is bundled or started automatically. You can ask the agent to
 configure one using available host tools. Supply its cadence, time zone, and
-notebook settings, or complete interactive setup first. A possible prompt is:
+notebook settings, or complete interactive setup first. Select this plugin's
+`work-recorder` agent for the automation and use:
 
-> Read the current work-recorder profile from this plugin's actual installed
-> location. Read the current user's personal work-recorder config from the
-> trusted actual home. Use available tools to complete authorized setup if needed;
-> report missing information or access without asking blocking questions.
-> Draft today's record in the configured time zone through the actual retrieval
-> cutoff. Preserve corrections, reconcile earlier partial-day coverage only
-> where retrieval succeeds, and report source gaps and actual changed files.
+> Record today's work.
 
 The scheduler must supply a trustworthy current time and the intended agent
 configuration. There is no guarantee of offline delivery or missed-run catch-up.
+
+Same-day updates, concise output, and next-day stand-up drafts are plugin
+defaults; they need not be repeated in the automation prompt. Personal date
+grouping, such as treating Friday through Sunday as one record, stays in the
+automation request. Specify the group's date/window so later runs update the
+same record. Calendar days remain the plugin default.
 
 ## Tool access and privacy
 
@@ -223,11 +262,12 @@ original access requirements; this plugin does not make private sources public.
 Never fabricate URLs or evidence. Current-status answers need newer source
 checks, or an explicit statement that current verification was unavailable.
 
-Coverage is bounded, not exhaustive. The agent reports the requested window,
-successful sources, pagination limits, and retrieval/authentication failures.
-Complete automated retrieval failure leaves notes unchanged. Partial retrieval
-may produce a labeled partial summary without overwriting existing content or
-claiming failed intervals were covered. Missing hits do not prove no work occurred.
+Coverage is bounded, not exhaustive. The daily note keeps the searched window
+and only material warnings, not a retrieval report. Complete automated retrieval
+failure leaves notes unchanged and is reported to the caller. Partial retrieval
+may produce a summary with a short warning naming unavailable sources or actual
+truncation, without overwriting existing content or claiming failed intervals
+were covered. Missing hits do not prove no work occurred.
 
 These are instruction-guided safeguards, not a deterministic sandbox.
 Host tools, permissions, and model behavior determine what can actually run.
