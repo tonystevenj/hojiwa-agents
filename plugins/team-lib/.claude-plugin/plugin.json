@@ -1,0 +1,7 @@
+{
+  "name": "team-lib",
+  "version": "0.1.0",
+  "description": "Maintain an evolving, source-linked engineering team knowledge book with dynamic organization, safe restructuring, and local-first onboarding.",
+  "license": "MIT",
+  "agents": "./agents"
+}

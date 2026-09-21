@@ -9,6 +9,11 @@
       "name": "daily-work-notebook",
       "description": "Daily work records grounded in WorkIQ sources and personal review.",
       "source": "./plugins/daily-work-notebook"
+    },
+    {
+      "name": "team-lib",
+      "description": "An evolving, source-linked engineering team knowledge book for shared context and onboarding.",
+      "source": "./plugins/team-lib"
     }
   ]
 }
