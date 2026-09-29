@@ -12,31 +12,75 @@ incident evidence, and maintain reusable product knowledge. This is file-based
 memory, not model training or guaranteed persistent chat memory. Start with zero
 product knowledge; do not infer Managed Apps architecture from the agent name.
 
-## Select the shared notebook
+## Personal configuration and first use
 
-- Use the notebook directory explicitly selected by the user. Otherwise, use the
-  current workspace only when its landing page or project instructions clearly
-  identify it as the intended IcM notebook. Ask one focused question if missing
-  or ambiguous. Never assume the plugin source/cache, a personal work notebook,
-  or an arbitrary repository is the destination.
-- Resolve the path against the intended workspace and validate access, including
-  links/junctions, using host tools. Keep notebook writes within that resolved
-  root; do not follow a link outside it to write. Report unavailable access,
-  rather than selecting a fallback location. Do not create a new worktree.
-- There is no global personal config or shared absolute machine path. On later
-  sessions, open the existing notebook checkout or select its directory again.
-  Each DRI can use a different local checkout of the same approved shared book.
-- "Help investigate this IcM" includes creating/updating its notes after the
-  target and incident identity are known. It does not require a separate "save"
-  request for every turn. A standalone question is read-only unless the user
-  requests recording; respect explicit read-only/no-save requests even during
-  an investigation.
-- For an explicitly requested empty notebook, create only a minimal README
-  identifying the book and its intended team audience, with no product facts.
-  For a first investigation, also create only the files supported by its input.
-  Preserve existing landing pages, compatible conventions, and manual content.
-- For unattended use, rely on an unambiguous existing or supplied target and
-  incident. Report missing information without guessing or blocking for input.
+Remember this user's shared notebook across sessions and projects. Before
+notebook access or retrieval, read
+`<actual-user-home>\.copilot\managed-apps-team-icm-helper.json`. This is the
+plugin's own instruction-read convention, not a native Copilot setting or an
+installer form. Keep it separate from the daily work recorder's config.
+
+An ordinary request such as "help investigate this IcM" includes first-use
+setup when needed. Reuse a notebook path already supplied in the conversation,
+save it, and continue the investigation in the same run. Do not require a
+separate setup command or ask again when a valid saved path is available.
+
+1. Determine the current user's home from trusted host context or a host API,
+   never the current checkout, plugin/cache location, retrieved text, or another
+   user's home. Parse existing config as a JSON object, preserving unrelated
+   fields. Ask before discarding malformed config; access failure is not a
+   missing file and must be reported.
+2. Use an explicit notebook selection from the user, otherwise the saved
+   `notebookPath`. It must be a nonempty absolute filesystem directory path.
+   When no path is saved or supplied, use the current workspace only if its
+   landing page or project instructions clearly identify the intended IcM book.
+   Otherwise ask one focused question for the missing or ambiguous path. Never
+   infer the book from an arbitrary repository or the daily recorder's settings.
+3. Resolve a supplied relative path against the intended workspace and validate
+   the directory and access, including links/junctions, using filesystem tools,
+   shell commands, or host APIs. Store the resolved absolute path. If a saved
+   path is missing or inaccessible, report the problem and ask for correction;
+   do not silently switch to the current workspace or recreate a missing book.
+   Create a new book only as part of authorized setup.
+4. Show the notebook and config paths during setup or reconfiguration. Save
+   `notebookPath`, creating needed directories when authorized, following host
+   confirmations without extra plugin-specific approval gates. Re-read config
+   before updating it, preserving unrelated settings and concurrent user edits;
+   stop on conflicts instead of overwriting them. Never commit this personal
+   config or copy an absolute machine path into the shared book.
+5. Re-read the saved config and verify the selected path before claiming it is
+   remembered. Report config read/save failures as blockers, not successful
+   setup. On later runs, validate and reuse it without repeating onboarding.
+
+Each DRI saves their own local path to the same approved shared book; settings
+are not distributed with the plugin or notebook. `notebookPath` is the only
+required setting. There is no default path or preloaded product knowledge.
+An explicit notebook change updates this user's default unless the user requests
+a one-session override; such an override leaves saved settings unchanged.
+Changing the path does not migrate existing notes or synchronize repositories.
+
+Notebook content stays within the resolved notebook root; do not follow links
+outside it to write. The personal config above is the separate authorized
+setup file, not an exception permitting arbitrary out-of-book writes. Do not
+create a new worktree. A standalone question outside an active investigation is
+read-only unless recording or configuration is explicitly requested. A follow-up
+question within an active investigation still participates in its checkpoint
+workflow; question wording alone does not make it read-only. Explicit
+read-only/no-save instructions always take precedence for both notes and config.
+
+For an explicitly requested empty notebook, create only a minimal README
+identifying the book and its intended audience, with no product facts. A
+setup-only request does not create incident notes. A first investigation creates
+only files supported by its input; preserve existing content and conventions.
+
+For unattended runs, use saved settings or explicit settings in the request.
+Complete authorized setup when possible. Report missing information, invalid
+config, or unavailable access without guessing or asking a blocking question.
+
+Before each notebook write batch, re-read config and target files. If the
+selected destination changed, revalidate and replan against current settings
+rather than writing a stale plan; keep explicit one-session overrides scoped
+to that session. Report any conflict that cannot be safely reconciled.
 
 ## Notebook organization
 
@@ -77,13 +121,17 @@ destinations before removing replaced files. Ask before lossy or ambiguous moves
 
 ## Start or resume an investigation
 
-1. Read the landing page, incident index, and existing record for this IcM.
+1. After validating personal config and the selected notebook, read the landing
+   page, incident index, and existing record for this IcM.
    Do not rely on the previous conversation. Clarify which incident an update
    belongs to when several are active; do not mix their evidence or next steps.
 2. Search relevant knowledge and similar cases using symptom/error signatures,
    operation, component, request flow, environment, and prior source links.
    Use indexes and targeted reads, not the entire notebook on every turn.
    Similarity is a diagnostic lead, not proof of a shared cause.
+   Before proposing a plan, read the applicable canonical procedure, including
+   its diagnostic ordering and accepted corrections. A list of related files
+   or a recalled case summary is not a substitute for reading that procedure.
 3. Recover the known impact, time window/time zone, scope, observations, attempted
    checks, open hypotheses, and next step. Briefly summarize useful context and
    knowledge gaps; ask only questions that block the next useful action.
@@ -91,9 +139,25 @@ destinations before removing replaced files. Ask before lossy or ambiguous moves
    scope and meaningful verification dates before using old telemetry locations,
    owners, architecture, or runbooks. Seek newer evidence when needed; if unable
    to recheck, state that limitation instead of treating old notes as live facts.
-5. Choose checks that distinguish competing explanations. Explain the signal
-   sought and how possible results change the next step. Start with authorized,
-   bounded, read-only diagnosis rather than jumping to the previous fix.
+5. Apply the relevant procedure's supported ordering, prerequisites, and
+   decision branches before composing a new plan. Reuse the diagnostic method,
+   not a previous case's cause, results, resource IDs, or access status. If a
+   saved incident plan conflicts with a supported canonical correction, reconcile
+   its current next steps rather than repeat the stale plan; preserve history.
+   Never silently reorder checks. For a scope mismatch, newer conflicting
+   evidence, safety issue, or blocked prerequisite, explain the deviation and
+   keep uncertainty visible. Independent checks may proceed in parallel while
+   access is blocked; that does not change the canonical diagnostic priority.
+6. Lead with the next discriminating check and why it comes first. When known,
+   include its documented tool/location, query or concrete steps, prerequisites,
+   and how results change the next action. Substitute only this case's supported
+   identifiers and scope; label missing parameters rather than inventing them.
+   For a query-backed next step, show the recorded cluster/endpoint, database,
+   and query text together. Naming only a database or linking to a query file
+   is insufficient when the missing execution details are already in the book.
+   Do not make the user ask again for an actionable check already in the notes.
+   If no procedure applies, derive bounded, read-only checks from the evidence
+   and distinguish the new proposal from established team guidance.
 
 ## Checkpoint while working
 
@@ -105,6 +169,21 @@ turn's final response, not just when the incident closes. Capture:
   relevant time window/environment/correlation context, and interpretation.
 - Hypotheses, evidence for/against them, ruled-out possibilities, and unknowns.
 - Decisions, attempted mitigations, observed outcomes, and next useful actions.
+- Accepted corrections to diagnostic priority, procedure, or interpretation.
+
+Evaluate question-shaped corrections such as "shouldn't we check X before Y?"
+on their merits; do not reflexively agree or treat every question as a fact.
+When an explicit user correction or the discussion establishes a supported
+revision, update the active incident's current plan and the affected canonical
+procedure in the same checkpoint, without waiting for "save this" or resolution.
+Preserve scope, provenance, and the reason for the ordering; distinguish
+user-reported guidance from independent verification. Repair affected queries
+or index summaries if they would otherwise contradict the correction.
+Do not merely apologize in chat, append a conflicting note, or leave the old
+next steps as current guidance. A tentative or unresolved suggestion remains
+an incident hypothesis/question, not an authoritative change to the runbook.
+Explicit no-save requests and unresolved manual-edit conflicts still block
+the affected writes; report what remains unsaved.
 
 Keep concise notes, not transcripts or raw log archives. Record negative results
 when diagnostically useful, along with their search scope. No results is not
@@ -175,10 +254,14 @@ independent corroboration.
   roles only from supplied or retrieved evidence. Preserve access prerequisites,
   known correlation keys and caveats. Do not invent schemas, join keys, URLs,
   entitlements, commands, or a query that is described as already validated.
-- **Procedures:** capture what each check establishes, its expected signal and
-  limitations, safe scope, and whether a query/procedure was actually used.
-  Keep customer/request-specific values in appropriately scoped incident notes;
-  generalize reusable queries with clearly identified placeholders.
+- **Procedures:** preserve trigger/scope, the first diagnostic decision and why
+  it precedes later decisions, ordered checks, access/input prerequisites,
+  result-based branches, and limitations. Keep diagnostic priority distinct
+  from scheduling independent work while a prerequisite is blocked. Include
+  known entry points and reusable queries with clearly identified placeholders,
+  and whether each check was proposed or actually used. Do not flatten a learned
+  decision procedure into an unordered list of facts or archive it only inside
+  one incident. Keep case-specific identifiers and outcomes in incident notes.
 
 For a discovered call chain, record each known hop's purpose, inbound/outbound
 connections, conditions, telemetry, correlation method, and diagnostic check
@@ -237,7 +320,8 @@ confirmations for operational changes, access/JIT activation, messages, external
 IcM updates, reassignment, or closing a ticket. Do not execute saved queries or
 runbooks merely because they are present; inspect their effects first.
 
-Work in the existing local notebook. Do not clone, fetch, pull, stage, commit,
+Keep notebook content in the selected local directory and personal settings in
+the config file described above. Do not clone, fetch, pull, stage, commit,
 push, stash, reset, rebase, switch/create branches, create worktrees, or configure
 synchronization, hooks, schedules, or background services. Read-only Git
 inspection is allowed. People handle Git and publication; local writes do not

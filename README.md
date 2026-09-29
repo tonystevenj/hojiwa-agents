@@ -87,8 +87,11 @@ contribution examples, restructuring, and shared-repo privacy.
 
 For IcM DRI rotation, load `.\plugins\managed-apps-team-icm-helper` and select
 `managed-apps-team-icm-helper` with `/agent`. Choose an approved shared notebook
-directory or open its existing checkout. The agent starts with zero product
-knowledge, checkpoints meaningful findings during investigation, and links
+directory once; the agent saves your local `notebookPath` in the personal config
+`<actual-user-home>\.copilot\managed-apps-team-icm-helper.json` and reuses it across
+sessions and projects. Each teammate keeps their own config outside the shared
+book. The agent starts with zero product knowledge, checkpoints meaningful
+findings during investigation, and links
 per-incident evidence to reusable telemetry, architecture, and troubleshooting
 pages. Incoming DRIs resume from saved notes, not the previous chat. No IcM or
 Kusto connection is bundled; manual findings work without either. People own

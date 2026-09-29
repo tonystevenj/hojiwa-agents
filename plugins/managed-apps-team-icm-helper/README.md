@@ -21,6 +21,8 @@ documentation, not team knowledge, incident data, scripts, hooks, or a database.
 
 - GitHub Copilot CLI with plugin/custom-agent support and permitted filesystem
   tools. The agent declares `tools: ['*']`; host permissions still apply.
+- Permission to determine your actual user home, read/save the personal config
+  described below, and validate access to the selected notebook.
 - An approved team notebook directory, usually an existing local checkout of
   the team's private knowledge repository.
 - Permission to save incident information for everyone who can read that book.
@@ -59,9 +61,10 @@ To try the source locally before publication, from this marketplace repository:
 copilot --plugin-dir ".\plugins\managed-apps-team-icm-helper"
 ```
 
-Select the agent with `/agent`, then explicitly supply the notebook directory.
-The plugin development checkout is not automatically the notebook. Start a fresh
-CLI invocation after source edits; an installed copy does not track local edits.
+Select the agent with `/agent`, then supply the notebook directory on first use.
+Later sessions reuse your saved selection. The plugin development checkout is
+not automatically the notebook. Start a fresh CLI invocation after source edits;
+an installed copy does not track local edits.
 
 Discovery without installing or updating:
 
@@ -77,21 +80,69 @@ Plugin discovery alone does not verify troubleshooting or note-taking behavior.
 
 ## First use: select the shared book
 
-The team chooses an approved notebook location and audience. Each DRI opens
-their existing local checkout or supplies its local path:
+The team chooses an approved notebook location and audience. Each DRI supplies
+their own local path once, or opens a workspace clearly identified as the book
+when they have no saved selection:
 
 > Use C:\Teams\ManagedApps\IcmNotebook as our shared IcM notebook. Help me
 > investigate IcM 123456. Here are the symptoms and the client telemetry details.
 
 The path and ID are examples, not defaults. Use the real incident identity;
 if there is no IcM ID yet, supply a local case name. A first investigation
-includes setup and saving supported notes; no separate onboarding command is
-needed. An empty-book request creates only a minimal landing page.
+includes saving your selection and the supported notes; no separate onboarding
+command is needed. An empty-book request creates only a minimal landing page
+in the notebook, alongside the separate personal config.
 
-There is no global personal configuration, fixed machine path, or preloaded
-cluster/architecture list. On another session or machine, open the notebook
-checkout or select its directory again. Installing the same agent does not
-give teammates access to the same notes.
+### Your remembered notebook path
+
+Before notebook access, the agent reads
+`<actual-user-home>\.copilot\managed-apps-team-icm-helper.json`. This uses the
+same per-user setup pattern as the daily work recorder, with its own config
+file. It is an instruction-read convention, not a native Copilot setting or
+an installation prompt.
+
+Only `notebookPath` is required: a nonempty absolute directory path. For example,
+this fictional user chose the following location; it is not a default:
+
+```json
+{
+  "notebookPath": "C:\\Teams\\ManagedApps\\IcmNotebook"
+}
+```
+
+The agent derives your actual home from trusted host context, validates the
+notebook path and access (including links/junctions), saves the resolved absolute
+path, and rereads the config to verify it. Existing content and unrelated config
+fields are preserved. It asks before discarding malformed config and reports
+access/save failures rather than claiming the selection was remembered.
+
+New sessions can start from another project: select the agent and ask
+"Continue IcM 123456" without repeating the notebook path. A valid saved path
+takes priority over the current workspace. If it no longer exists or cannot be
+accessed, the agent reports the problem rather than silently switching books or
+creating an empty replacement.
+
+Each teammate configures their own local checkout once per machine. Keep this
+config outside the shared repository; do not commit it. Installing the same
+agent does not give teammates access to your files or settings. There is no
+preloaded cluster/architecture list.
+
+### Change the saved path
+
+Ask "Change my IcM notebook to <new local directory>" to update your default.
+A relative path is resolved against the intended workspace and saved as an
+absolute path. This does not move old notes, clone a repository, or synchronize
+anything. Say "Use <directory> for this session only" to leave the default
+unchanged.
+
+A setup-only request saves settings without creating incident notes. A
+standalone question is read-only unless you explicitly request configuration
+or recording; "do not save" applies to both notebook and config. Before notebook
+write batches, the agent rereads settings and affected files so a concurrent
+path change or manual edit is not silently overwritten. Unattended runs use
+saved or explicitly supplied settings and report blockers without guessing.
+
+## Notebook layout
 
 Existing files and compatible organization are preserved. The agent creates
 only pages justified by actual information. The following is the intended
@@ -123,8 +174,8 @@ An index helps find cases by symptom, error signature, component, and environmen
 | --- | --- |
 | Start/resume | Read the case, relevant product knowledge, and similar incidents; recover the current state and next useful check. |
 | Learn | Record your explanations and observed results with sources, scope, and uncertainty. External corroboration is not required for user-reported knowledge. |
-| Diagnose | Propose discriminating checks; distinguish proposed queries from executed queries and real results. Similar cases suggest checks, not predetermined causes. |
-| Checkpoint | Save meaningful new evidence, decisions, failed approaches, and next steps before completing an investigation turn. |
+| Diagnose | Apply relevant saved procedures, preserving diagnostic order and decision branches; explain justified deviations and give the actionable next check. Reuse methods, not earlier diagnoses or resource IDs. |
+| Checkpoint | Save meaningful new evidence, decisions, failed approaches, next steps, and accepted procedural corrections before completing an investigation turn. |
 | Generalize | Update reusable architecture, telemetry, or troubleshooting pages as supported findings emerge, even before resolution. |
 | Resolve/handoff | Consolidate the same record, update its index entry, and leave enough context for a fresh session or the next DRI. |
 
@@ -132,9 +183,11 @@ You do not need to say "save this" after each finding during an investigation.
 Notes are concise, not a transcript. Repeating the same information should not
 create duplicate cases or timestamp-only edits.
 
-A standalone notebook question is read-only unless saving is requested. You
-can also say "do not save this" during investigation. A failed or partial write
-must be reported; an unsaved chat response is not durable memory.
+A standalone notebook question outside an active investigation is read-only
+unless saving is requested. Follow-up questions during an investigation remain
+part of its checkpoint workflow. You can always say "do not save this"; that
+overrides automatic note-taking. A failed or partial write must be reported;
+an unsaved chat response is not durable memory.
 
 **Automatic does not mean always running.** The agent checkpoints while it is
 active. It cannot guarantee saving an interrupted turn, monitor incidents after
@@ -160,6 +213,32 @@ the diagnostic knowledge without losing the five-hop map.
 The flow remains scoped to the observed operation/environment/version. Five
 observed hops are not proof of all possible paths, and missing telemetry is not
 automatically proof of failure.
+
+### Learning a better diagnostic procedure
+
+The notebook remembers decision order, not just available checks. A reusable
+procedure captures when it applies, which diagnostic question comes first and
+why, prerequisites, concrete checks, and what to do for each result.
+
+If you ask "shouldn't we check X before Y?" during an investigation, the agent
+evaluates the suggestion rather than automatically agreeing. When the discussion
+establishes a correction, it updates both the incident's current next steps and
+the canonical procedure before finishing the turn. It does not just acknowledge
+the correction in chat or wait for "save this." Unresolved suggestions remain
+hypotheses, and explicit read-only requests still prevent writes.
+
+For the next matching incident, it reads and applies that saved procedure and
+provides the documented query/location or concrete next action when known. A
+query-backed first step includes the recorded cluster/endpoint, database, and
+query text together, not just a link to a file or a database name.
+Different scope, newer evidence, safety constraints, or blocked prerequisites
+can justify a deviation, but the agent must explain it. Independent work can
+proceed while access is pending without silently changing the learned order.
+It must not transfer the previous case's identifiers, results, or permissions.
+
+These rules guide future investigations; updating the plugin alone does not
+retroactively repair existing notes. During relevant work, supported corrections
+are reconciled with the current plan while historical evidence is preserved.
 
 ## Everyday prompts
 
@@ -199,7 +278,8 @@ For direct concurrent editing, coordinate ownership: there is no distributed
 lock or atomic multi-file transaction. The agent rereads files and reports
 detected conflicts rather than intentionally overwriting another DRI's edits.
 
-**Incoming DRI:** open the updated local notebook, select the agent, then ask:
+**Incoming DRI:** obtain the updated notebook through the team's normal process.
+Select the agent in any workspace; it reuses your saved notebook path. Then ask:
 
 > I am starting my DRI rotation. Read the notebook's open cases and relevant
 > runbooks. Show current recorded status, next checks, and stale or missing
@@ -243,6 +323,10 @@ Use a separate approved test notebook and fictional incidents, not customer data
 
 | Scenario | Expected outcome |
 | --- | --- |
+| First investigation with an explicit notebook path | Save and verify personal `notebookPath`, then continue the investigation without a separate setup request. |
+| Start from another project without supplying a path | Reuse the saved book; do not ask again or write notes into the new project. |
+| Change the default or request a one-session override | Persist an explicit default change; leave saved settings intact for a one-session override. |
+| Saved path is inaccessible or config is malformed | Report the problem without switching books, discarding config, or claiming successful setup. |
 | Start empty and explain a telemetry location | Only supported notes appear; no invented cluster, schema, or empty taxonomy. |
 | Repeat the same finding | No duplicate case, copied knowledge page, or timestamp-only churn. |
 | Start a fresh conversation for the same case | Recover observations and next checks from disk without the prior chat. |
@@ -250,8 +334,34 @@ Use a separate approved test notebook and fictional incidents, not customer data
 | Supply evidence that the new failure is at hop 4 | Save the new case and extend diagnostics while preserving the original case. |
 | Report mitigation with unknown cause | Keep the cause unknown and do not mark the live ticket closed. |
 | Supply contradictory telemetry guidance | Preserve attributed alternatives and request clarification instead of silently replacing evidence. |
+| Accept a question-shaped procedural correction during investigation | Update both current incident next steps and the canonical procedure, without needing "save this"; leave unaccepted suggestions tentative. |
+| Start a matching incident in a fresh session | Apply the corrected first check and decision order; provide known execution details without copying the old case's identifiers or result. |
+| The first check's access prerequisite is blocked | Explain the blocker and any safe parallel checks without silently rewriting canonical priority or claiming a successful check. |
+| Ask a correction question with "do not save" | Answer without changing incident notes, reusable guidance, or personal config. |
 | Request a read-only rotation summary | Explain recorded open cases and gaps without writing files or claiming a complete live queue. |
 | Deny notebook write access or introduce a conflicting edit | Report the blocked/partial checkpoint, never claim that unsaved evidence was saved. |
+
+### Procedure-correction regression
+
+Use fictional data in an approved test notebook; do not execute the example
+queries or operational changes.
+
+1. Record a fictional certificate alert for `alpha.example.test`, identifier
+   `TEST-CERT-A`. Supply a provisional plan that compares replacement versions
+   before checking live usage, plus a fictional telemetry location/schema and
+   usage-query template with an identifier placeholder.
+2. Continue that investigation with: "Shouldn't we establish whether the
+   alerted certificate is still in use before investigating renewal? A
+   replacement in inventory does not establish current usage." Do not add
+   "save this." Confirm the accepted correction updates both the incident's
+   next steps and reusable procedure, including the rationale. It must not
+   claim the usage check ran.
+3. In a fresh session using the same book, ask: "Help investigate a certificate
+   expiry alert for beta.example.test, identifier TEST-CERT-B. Tell me what to
+   do first." Supply a new fictional IcM ID, not the old case. The first
+   diagnostic decision should concern current usage, with prerequisites and
+   the documented check using `TEST-CERT-B`. Renewal decisions follow the
+   evidence; no old certificate identity or assumed outcome is carried over.
 
 ## License
 
