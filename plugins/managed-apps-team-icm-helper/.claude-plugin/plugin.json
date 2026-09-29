@@ -1,0 +1,7 @@
+{
+  "name": "managed-apps-team-icm-helper",
+  "version": "0.1.0",
+  "description": "Investigate Managed Apps incidents with a shared, source-linked notebook that preserves per-IcM evidence, learns product knowledge, and supports DRI rotation handoffs.",
+  "license": "MIT",
+  "agents": "./agents"
+}

@@ -10,6 +10,7 @@ instructions and documentation, not personal notebooks, credentials, or work dat
 | --- | --- |
 | [daily-work-notebook](plugins/daily-work-notebook/README.md) | One personal, source-linked notebook across projects, with WorkIQ evidence, protected manual additions, and all host-provided tools. |
 | [team-lib](plugins/team-lib/README.md) | A shared engineering knowledge book that starts empty, grows its own organization, and helps new hires; Git syncing stays manual. |
+| [managed-apps-team-icm-helper](plugins/managed-apps-team-icm-helper/README.md) | An IcM troubleshooting partner that checkpoints a shared notebook, learns product knowledge, and supports DRI rotation handoffs. |
 
 ## Repository layout
 
@@ -22,6 +23,10 @@ plugins\daily-work-notebook\
 plugins\team-lib\
   .claude-plugin\plugin.json
   agents\team-lib.agent.md
+  README.md
+plugins\managed-apps-team-icm-helper\
+  .claude-plugin\plugin.json
+  agents\managed-apps-team-icm-helper.agent.md
   README.md
 LICENSE
 README.md
@@ -41,6 +46,7 @@ If the intended repository `tonystevenj/hojiwa-agents` is available to you:
 copilot plugin marketplace add tonystevenj/hojiwa-agents
 copilot plugin install daily-work-notebook@hojiwa-agents
 copilot plugin install team-lib@hojiwa-agents
+copilot plugin install managed-apps-team-icm-helper@hojiwa-agents
 ```
 
 These are installation instructions, not a claim that the repository has been
@@ -78,6 +84,17 @@ and adapts folders to the material. It only manages local knowledge files, not
 Git commits, branches, worktrees, or synchronization. See the
 [team knowledge guide](plugins/team-lib/README.md) for setup,
 contribution examples, restructuring, and shared-repo privacy.
+
+For IcM DRI rotation, load `.\plugins\managed-apps-team-icm-helper` and select
+`managed-apps-team-icm-helper` with `/agent`. Choose an approved shared notebook
+directory or open its existing checkout. The agent starts with zero product
+knowledge, checkpoints meaningful findings during investigation, and links
+per-incident evidence to reusable telemetry, architecture, and troubleshooting
+pages. Incoming DRIs resume from saved notes, not the previous chat. No IcM or
+Kusto connection is bundled; manual findings work without either. People own
+Git synchronization and publication. See the
+[IcM helper guide](plugins/managed-apps-team-icm-helper/README.md) for installation,
+team onboarding, investigation examples, rotation handoffs, and safety limits.
 
 ## License
 

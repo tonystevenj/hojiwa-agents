@@ -14,6 +14,11 @@
       "name": "team-lib",
       "description": "An evolving, source-linked engineering team knowledge book for shared context and onboarding.",
       "source": "./plugins/team-lib"
+    },
+    {
+      "name": "managed-apps-team-icm-helper",
+      "description": "Shared IcM investigation memory, reusable Managed Apps knowledge, and DRI rotation handoffs.",
+      "source": "./plugins/managed-apps-team-icm-helper"
     }
   ]
 }
