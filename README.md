@@ -11,7 +11,7 @@ instructions and documentation, not personal notebooks, credentials, or work dat
 | [daily-work-notebook](plugins/daily-work-notebook/README.md) | One personal, source-linked notebook across projects, with WorkIQ evidence, protected manual additions, and all host-provided tools. |
 | [team-lib](plugins/team-lib/README.md) | A shared engineering knowledge book that starts empty, grows its own organization, and helps new hires; Git syncing stays manual. |
 | [managed-apps-team-icm-helper](plugins/managed-apps-team-icm-helper/README.md) | An IcM troubleshooting partner that checkpoints a shared notebook, learns product knowledge, and supports DRI rotation handoffs. |
-| [personal-assistant](plugins/personal-assistant/README.md) | A personal work partner that remembers useful conversation knowledge and automatically organizes, corrects, merges, and prunes its private notebook. |
+| [hojiwa-personal-assistant](plugins/hojiwa-personal-assistant/README.md) | A personal work partner that remembers useful conversation knowledge and automatically organizes, corrects, merges, and prunes its private notebook. |
 
 ## Repository layout
 
@@ -39,12 +39,12 @@ plugins\managed-apps-team-icm-helper\
   com.github.copilot\agents\managed-apps-team-icm-helper.agent.md
   skills\managed-apps-team-icm-helper\SKILL.md
   README.md
-plugins\personal-assistant\
+plugins\hojiwa-personal-assistant\
   plugin.json
   .claude-plugin\plugin.json
-  agents\personal-assistant.agent.md
-  com.github.copilot\agents\personal-assistant.agent.md
-  skills\personal-assistant\SKILL.md
+  agents\hojiwa-personal-assistant.agent.md
+  com.github.copilot\agents\hojiwa-personal-assistant.agent.md
+  skills\hojiwa-personal-assistant\SKILL.md
   README.md
 scripts\validate-plugin-compatibility.mjs
 .github\workflows\plugin-compatibility.yml
@@ -68,7 +68,7 @@ copilot plugin marketplace add tonystevenj/hojiwa-agents
 copilot plugin install daily-work-notebook@hojiwa-agents
 copilot plugin install team-lib@hojiwa-agents
 copilot plugin install managed-apps-team-icm-helper@hojiwa-agents
-copilot plugin install personal-assistant@hojiwa-agents
+copilot plugin install hojiwa-personal-assistant@hojiwa-agents
 ```
 
 These are installation instructions, not a claim that the repository has been
@@ -80,20 +80,24 @@ a newly added plugin:
 
 ```powershell
 copilot plugin marketplace update hojiwa-agents
-copilot plugin install personal-assistant@hojiwa-agents
+copilot plugin install hojiwa-personal-assistant@hojiwa-agents
 ```
 
 Each catalog entry is a separate plugin. Updating an installed plugin, including
-`daily-work-notebook` or the IcM helper, does not install `personal-assistant`.
+`daily-work-notebook` or the IcM helper, does not install `hojiwa-personal-assistant`.
 After installing it, start a fresh Copilot session and select it through `/agent`.
 For later updates to an already installed personal assistant:
 
 ```powershell
-copilot plugin update personal-assistant@hojiwa-agents
+copilot plugin update hojiwa-personal-assistant@hojiwa-agents
 ```
 
 These commands retrieve published changes. A local Git commit alone does not
 make a plugin available to other users.
+
+The former `personal-assistant` package is now `hojiwa-personal-assistant`.
+Install the renamed package explicitly rather than updating the old identity.
+Its existing personal configuration and notebook selection remain valid.
 
 For local development, run from this marketplace repository root:
 
@@ -141,17 +145,18 @@ Git synchronization and publication. See the
 [IcM helper guide](plugins/managed-apps-team-icm-helper/README.md) for installation,
 team onboarding, investigation examples, rotation handoffs, and safety limits.
 
-For a continuing personal assistant, load `.\plugins\personal-assistant` and
-select `personal-assistant` with `/agent`. It asks for a notebook directory on
+For a continuing personal assistant, load `.\plugins\hojiwa-personal-assistant` and
+select `hojiwa-personal-assistant` with `/agent`. It asks for a notebook directory on
 first use and saves the selection in
 `<actual-user-home>\.copilot\personal-assistant.json` for later sessions and projects.
 This is a separate agent-read configuration convention, not a native Copilot setting.
+The configuration filename remains unchanged to preserve selections made before the plugin rename.
 It saves useful knowledge during conversations, applies learned corrections,
 and lets folders develop as topics grow. It can merge, summarize, reorganize,
 and delete its own notes without requiring a source archive or change history.
 Maintenance occurs while the agent runs, not through background monitoring.
 Existing agents and their notebooks remain separate. See the
-[personal assistant guide](plugins/personal-assistant/README.md) for setup,
+[personal assistant guide](plugins/hojiwa-personal-assistant/README.md) for setup,
 examples, privacy, and memory limits.
 
 ## Portable discovery and compatibility
@@ -160,7 +165,8 @@ All four packages declare the
 [Agent Plugins 1.0.0 format](https://agent-plugins.org/specification).
 A **manifest** is the JSON file that declares a plugin's identity and version.
 The portable manifest is `plugin.json` at each plugin root, not `.plugin/plugin.json`.
-Legacy manifests remain in place so existing Copilot installations retain their identities.
+Legacy manifests remain in place for existing Copilot discovery.
+The personal assistant's explicit rename requires installation under its new identity.
 
 | Package location | Purpose |
 | --- | --- |
@@ -213,13 +219,14 @@ No user profile is installed or changed by the repository validation command.
 | `daily-work-notebook` | `0.2.1` |
 | `team-lib` | `0.1.1` |
 | `managed-apps-team-icm-helper` | `0.1.3` |
-| `personal-assistant` | `0.1.0` |
+| `hojiwa-personal-assistant` | `0.1.0` |
 
 Existing plugins receive patch releases for the additional discovery files and skills.
 The personal assistant remains a separate initial release.
 Updating another plugin still does not install it.
 Keep versions and metadata consistent across both manifests and the legacy catalog.
-Do not rename the marketplace or an existing plugin to publish an update.
+Ordinary version updates must preserve marketplace and plugin identities.
+An intentional rename, such as the personal assistant rename, requires installing the new identity.
 
 Edit full instructions under `agents\`, not the native compatibility copies.
 After changing instructions, regenerate the native copies and check all packages:

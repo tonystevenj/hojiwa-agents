@@ -1,4 +1,4 @@
-# Personal assistant
+# Hojiwa personal assistant
 
 A continuing work partner with its own evolving knowledge notebook.
 Talk with it about incidents, features, team knowledge, personal projects, and other tasks.
@@ -25,7 +25,7 @@ Host permissions and confirmation requirements still apply.
 No WorkIQ, IcM, Kusto, or other external connection is required for local notes.
 Available connections can support your requested work, but the plugin supplies no credentials or access.
 
-This package provides a Copilot agent and a portable `personal-assistant` skill.
+This package provides a Copilot agent and a portable `hojiwa-personal-assistant` skill.
 The skill reads the same full instructions before acting.
 See the [compatibility guide](../../README.md#portable-discovery-and-compatibility)
 for Agent Plugins metadata, Codex discovery, updates, and runtime limits.
@@ -35,10 +35,10 @@ for Agent Plugins metadata, Codex discovery, updates, and runtime limits.
 From this repository root, load the source without persistent installation:
 
 ```powershell
-copilot --plugin-dir ".\plugins\personal-assistant"
+copilot --plugin-dir ".\plugins\hojiwa-personal-assistant"
 ```
 
-Use `/agent` to select `personal-assistant`.
+Use `/agent` to select `hojiwa-personal-assistant`.
 Start a fresh CLI invocation after source edits.
 An installed copy does not track local source changes.
 
@@ -46,12 +46,12 @@ After publication to an accessible `tonystevenj/hojiwa-agents` repository:
 
 ```powershell
 copilot plugin marketplace add tonystevenj/hojiwa-agents
-copilot plugin install personal-assistant@hojiwa-agents
+copilot plugin install hojiwa-personal-assistant@hojiwa-agents
 ```
 
 These commands install the plugin, not your notebook.
 Repository publication and access are not guaranteed by this guide.
-The fully qualified agent selector is `personal-assistant:personal-assistant`.
+The fully qualified agent selector is `hojiwa-personal-assistant:hojiwa-personal-assistant`.
 
 ### Existing marketplace users and later updates
 
@@ -59,7 +59,7 @@ If you already registered `hojiwa-agents`, refresh its catalog and install the n
 
 ```powershell
 copilot plugin marketplace update hojiwa-agents
-copilot plugin install personal-assistant@hojiwa-agents
+copilot plugin install hojiwa-personal-assistant@hojiwa-agents
 ```
 
 The personal assistant is a separate plugin.
@@ -67,14 +67,19 @@ Updating the daily work recorder or IcM helper does not install this agent.
 Its initial version is `0.1.0`.
 The other plugins receive separate patch releases for their new portable discovery support.
 
+If you installed the earlier `personal-assistant` package, use the commands above to install the renamed package.
+Updating the old plugin does not change its identity to `hojiwa-personal-assistant`.
+The renamed agent reuses the existing personal configuration and notebook selection.
+No notebook migration is required.
+
 After you install it, retrieve later published versions with:
 
 ```powershell
-copilot plugin update personal-assistant@hojiwa-agents
+copilot plugin update hojiwa-personal-assistant@hojiwa-agents
 ```
 
 Start a fresh Copilot session after installation or an update.
-Use `/agent` to select `personal-assistant`.
+Use `/agent` to select `hojiwa-personal-assistant`.
 Plugin updates do not migrate your notebook or change its saved path.
 The publisher must push the repository changes before other users can retrieve them.
 A local commit alone does not publish an update.
@@ -84,15 +89,15 @@ A local commit alone does not publish an update.
 For noninstalling discovery:
 
 ```powershell
-copilot --no-auto-update --plugin-dir ".\plugins\personal-assistant" plugin list
+copilot --no-auto-update --plugin-dir ".\plugins\hojiwa-personal-assistant" plugin list
 ```
 
 The [marketplace manifest](../../.claude-plugin/marketplace.json) registers the plugin.
 The [legacy plugin manifest](.claude-plugin/plugin.json) declares `./agents`.
 The [portable manifest](plugin.json) declares standard metadata.
 Native Copilot discovery uses the matching copy under `com.github.copilot\agents\`.
-The [portable skill](skills/personal-assistant/SKILL.md) loads
-the [full agent instructions](agents/personal-assistant.agent.md).
+The [portable skill](skills/hojiwa-personal-assistant/SKILL.md) loads
+the [full agent instructions](agents/hojiwa-personal-assistant.agent.md).
 Discovery alone does not prove that note maintenance works correctly.
 
 ## First use: choose its notebook
@@ -108,6 +113,9 @@ The agent validates the directory and saves your choice in:
 ```text
 <actual-user-home>\.copilot\personal-assistant.json
 ```
+
+The configuration filename intentionally retains the earlier name.
+This preserves notebook selections made before the plugin rename.
 
 Only `notebookPath` is required:
 

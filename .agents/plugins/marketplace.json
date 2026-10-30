@@ -38,10 +38,10 @@
       "category": "Productivity"
     },
     {
-      "name": "personal-assistant",
+      "name": "hojiwa-personal-assistant",
       "source": {
         "source": "local",
-        "path": "./plugins/personal-assistant"
+        "path": "./plugins/hojiwa-personal-assistant"
       },
       "policy": {
         "installation": "AVAILABLE",
