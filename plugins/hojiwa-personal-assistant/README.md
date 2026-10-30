@@ -1,6 +1,7 @@
-# Hojiwa personal assistant
+# Wakoo - Hojiwa personal assistant
 
 A continuing work partner with its own evolving knowledge notebook.
+Its name is **Wakoo**. The plugin and agent identifier remains `hojiwa-personal-assistant`.
 Talk with it about incidents, features, team knowledge, personal projects, and other tasks.
 It saves useful context during conversations and reads relevant notes in later sessions.
 You do not need to say "save this" after each finding.
@@ -64,7 +65,7 @@ copilot plugin install hojiwa-personal-assistant@hojiwa-agents
 
 The personal assistant is a separate plugin.
 Updating the daily work recorder or IcM helper does not install this agent.
-Its initial version is `0.1.0`.
+Version `0.1.1` adds the Wakoo name and skill entry point.
 The other plugins receive separate patch releases for their new portable discovery support.
 
 If you installed the earlier `personal-assistant` package, use the commands above to install the renamed package.
@@ -99,6 +100,42 @@ Native Copilot discovery uses the matching copy under `com.github.copilot\agents
 The [portable skill](skills/hojiwa-personal-assistant/SKILL.md) loads
 the [full agent instructions](agents/hojiwa-personal-assistant.agent.md).
 Discovery alone does not prove that note maintenance works correctly.
+
+## Two ways to work with Wakoo
+
+**Normal use:** select `hojiwa-personal-assistant` through Copilot's `/agent`, then work normally.
+It reads relevant notes and saves useful knowledge automatically.
+You do not need to type "Wakoo", invoke a skill, or request notes after each turn.
+
+**Existing sessions:** if you started without this agent, call Wakoo to capture that session's knowledge:
+
+> wakoo take notes from this session
+
+The `wakoo` skill description helps the host recognize this direct request.
+Natural-language selection depends on the client and is not guaranteed.
+For explicit invocation in Copilot, select the `wakoo` skill from slash-command completion:
+
+```text
+/wakoo take notes from this session
+```
+
+In Codex, invoke the skill with `$wakoo`.
+If the client shows a namespaced skill, select the entry from `hojiwa-personal-assistant`.
+You can also select the `hojiwa-personal-assistant` agent through `/agent` first.
+The existing long-name skill remains available.
+
+Say "wakoo take over" to request continued assistance with automatic notebook checkpoints.
+A note-only request captures useful knowledge without expanding the current task.
+The skill applies the workflow through the current host.
+It does not itself switch the selected agent or guarantee that later turns retain the workflow.
+For continued automatic memory, select `hojiwa-personal-assistant` through `/agent`.
+
+Wakoo reads the conversation available in the current session and saves useful knowledge.
+It does not gain access to other chats or unavailable earlier history.
+Its response to a direct request starts with **`Wakoo:`**.
+After a successful save, it links the actual notebook files that changed.
+If saving fails or the notebook path is missing, it reports that state instead of claiming success.
+The name prefix identifies the requested workflow, not an independently verified separate agent process.
 
 ## First use: choose its notebook
 

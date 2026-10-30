@@ -45,6 +45,7 @@ plugins\hojiwa-personal-assistant\
   agents\hojiwa-personal-assistant.agent.md
   com.github.copilot\agents\hojiwa-personal-assistant.agent.md
   skills\hojiwa-personal-assistant\SKILL.md
+  skills\wakoo\SKILL.md
   README.md
 scripts\validate-plugin-compatibility.mjs
 .github\workflows\plugin-compatibility.yml
@@ -159,6 +160,14 @@ Existing agents and their notebooks remain separate. See the
 [personal assistant guide](plugins/hojiwa-personal-assistant/README.md) for setup,
 examples, privacy, and memory limits.
 
+The assistant's name is **Wakoo**.
+Select its agent and work normally for automatic memory. No name or note-taking command is required.
+In a session started without that agent, say "wakoo take notes from this session" or "wakoo take over".
+For explicit selection, use the `wakoo` skill through Copilot's slash-command completion or Codex's `$wakoo`.
+Direct replies start with `Wakoo:` and identify saved notebook files or explain why saving did not occur.
+Natural-language routing depends on the client. A name alone does not guarantee agent selection.
+The skill does not itself switch the host's selected agent.
+
 ## Portable discovery and compatibility
 
 All four packages declare the
@@ -219,7 +228,7 @@ No user profile is installed or changed by the repository validation command.
 | `daily-work-notebook` | `0.2.1` |
 | `team-lib` | `0.1.1` |
 | `managed-apps-team-icm-helper` | `0.1.3` |
-| `hojiwa-personal-assistant` | `0.1.0` |
+| `hojiwa-personal-assistant` | `0.1.1` |
 
 Existing plugins receive patch releases for the additional discovery files and skills.
 The personal assistant remains a separate initial release.

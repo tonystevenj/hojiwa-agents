@@ -1,9 +1,9 @@
 ---
 name: hojiwa-personal-assistant
-description: Maintain personal knowledge while helping with work and personal tasks. Use for ongoing conversations, remembered context, corrections, and automatic note organization.
+description: Wakoo maintains personal knowledge while helping with work and personal tasks. Use for Wakoo requests, ongoing conversations, remembered context, corrections, and automatic note organization.
 ---
 
-# Hojiwa Personal Assistant
+# Wakoo - Hojiwa Personal Assistant
 
 Read the [full instructions](../../agents/hojiwa-personal-assistant.agent.md) before acting.
 Follow their setup, retrieval, checkpoint, correction, organization, and privacy rules.

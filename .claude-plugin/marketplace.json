@@ -25,8 +25,8 @@
     },
     {
       "name": "hojiwa-personal-assistant",
-      "version": "0.1.0",
-      "description": "A personal work partner with an evolving Markdown notebook that remembers conversations, applies corrections, and organizes current knowledge across topics.",
+      "version": "0.1.1",
+      "description": "Wakoo, a personal work partner with an evolving Markdown notebook that remembers conversations, applies corrections, and organizes current knowledge across topics.",
       "source": "./plugins/hojiwa-personal-assistant"
     }
   ]

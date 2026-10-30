@@ -123,16 +123,19 @@ for (const entry of legacy.plugins) {
   assert.deepEqual(readdirSync(contained(base, native)), agents, `${path}: native agent set differs`);
   assert.equal(read(base, `${native}/${agents[0]}`), source, `${path}: native agent copy differs; run with --sync`);
 
-  assert.deepEqual(readdirSync(contained(base, 'skills')), [name], `${path}: expected one portable skill`);
-  const skillPath = `skills/${name}/SKILL.md`;
-  const skill = read(base, skillPath);
-  const skillMetadata = skill.match(/^---\nname: ([^\n]+)\ndescription: ([^\n]+)\n---\n/);
-  assert.ok(skillMetadata, `${path}: skill must declare only name and description`);
-  assert.equal(skillMetadata[1], name);
-  assert.ok(name.length <= 64 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name), 'Invalid skill name');
-  assert.ok(skillMetadata[2].trim().length > 0 && skillMetadata[2].length <= 1024, 'Invalid skill description');
-  assert.ok(skill.includes(`](../../agents/${agents[0]})`), `${path}: skill must link the full source instructions`);
-  links(base, skillPath, skill);
+  const skills = entry.name === 'hojiwa-personal-assistant' ? [name, 'wakoo'] : [name];
+  assert.deepEqual(readdirSync(contained(base, 'skills')).sort(), skills.sort(), `${path}: portable skill set differs`);
+  for (const skillName of skills) {
+    const skillPath = `skills/${skillName}/SKILL.md`;
+    const skill = read(base, skillPath);
+    const skillMetadata = skill.match(/^---\nname: ([^\n]+)\ndescription: ([^\n]+)\n---\n/);
+    assert.ok(skillMetadata, `${path}: skill must declare only name and description`);
+    assert.equal(skillMetadata[1], skillName);
+    assert.ok(skillName.length <= 64 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(skillName), 'Invalid skill name');
+    assert.ok(skillMetadata[2].trim().length > 0 && skillMetadata[2].length <= 1024, 'Invalid skill description');
+    assert.ok(skill.includes(`](../../agents/${agents[0]})`), `${path}: skill must link the full source instructions`);
+    links(base, skillPath, skill);
+  }
   links(base, `agents/${agents[0]}`, source);
   links(base, `${native}/${agents[0]}`, source);
   links(root, `${path}/README.md`, read(base, 'README.md'));
