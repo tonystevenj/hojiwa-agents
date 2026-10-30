@@ -34,8 +34,10 @@ for IcM/telemetry, the agent can use them for scoped diagnosis. Otherwise, it
 helps prepare checks and learns from the results you supply. The plugin grants
 no credentials, production access, entitlements, or extra tool permissions.
 
-This package targets Copilot. The legacy `.claude-plugin` layout does not
-establish compatibility with other hosts.
+This package provides a Copilot agent and a portable `managed-apps-team-icm-helper` skill.
+The skill reads the same full instructions before acting.
+See the [compatibility guide](../../README.md#portable-discovery-and-compatibility)
+for Agent Plugins metadata, Codex discovery, updates, and runtime limits.
 
 ## Install and select the agent
 
@@ -73,8 +75,10 @@ copilot --no-auto-update --plugin-dir ".\plugins\managed-apps-team-icm-helper" p
 ```
 
 The [marketplace manifest](../../.claude-plugin/marketplace.json) registers the
-package; the [plugin manifest](.claude-plugin/plugin.json) loads `./agents`.
-Behavior is defined in
+package; the [legacy plugin manifest](.claude-plugin/plugin.json) loads `./agents`.
+The [portable manifest](plugin.json) declares standard metadata.
+Native Copilot discovery uses the matching copy under `com.github.copilot\agents\`.
+The [portable skill](skills/managed-apps-team-icm-helper/SKILL.md) loads
 [the agent instructions](agents/managed-apps-team-icm-helper.agent.md).
 Plugin discovery alone does not verify troubleshooting or note-taking behavior.
 

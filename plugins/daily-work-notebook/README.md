@@ -25,9 +25,11 @@ After valid setup, explicitly requested manual recording and local notebook
 questions work without WorkIQ. Automatic retrieval must instead report failure
 when WorkIQ is unavailable; it must not claim successful or exhaustive coverage.
 
-This package targets Copilot. Its legacy `.claude-plugin`/`agents` folder layout
-does not establish Claude runtime or tool compatibility. It contains only agent
-instructions and documentation: no hooks, scripts, dependencies, MCP server,
+This package provides a Copilot agent and a portable `work-recorder` skill.
+The skill reads the same full instructions before acting.
+See the [compatibility guide](../../README.md#portable-discovery-and-compatibility)
+for Agent Plugins metadata, Codex discovery, updates, and runtime limits.
+It contains instructions and documentation: no hooks, scripts, dependencies, MCP server,
 native `userConfig` feature, installer questionnaire, or bundled scheduler.
 
 ## Install or load locally
@@ -63,8 +65,10 @@ discovery without updating:
 copilot --no-auto-update --plugin-dir ".\plugins\daily-work-notebook" plugin list
 ```
 
-The [plugin manifest](.claude-plugin/plugin.json) resolves `./agents` relative
-to this package. The runtime instructions are in
+The [legacy plugin manifest](.claude-plugin/plugin.json) resolves `./agents` relative
+to this package. The [portable manifest](plugin.json) declares standard metadata.
+Native Copilot discovery uses the matching copy under `com.github.copilot\agents\`.
+The [portable skill](skills/work-recorder/SKILL.md) loads the full instructions in
 [agents/work-recorder.agent.md](agents/work-recorder.agent.md). Discovery alone
 does not demonstrate executed onboarding or end-to-end WorkIQ behavior.
 

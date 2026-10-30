@@ -7,18 +7,27 @@
   "plugins": [
     {
       "name": "daily-work-notebook",
-      "description": "Daily work records grounded in WorkIQ sources and personal review.",
+      "version": "0.2.1",
+      "description": "Maintain a personal, source-linked work notebook with WorkIQ evidence, user-reviewed additions, and access to all host-provided tools.",
       "source": "./plugins/daily-work-notebook"
     },
     {
       "name": "team-lib",
-      "description": "An evolving, source-linked engineering team knowledge book for shared context and onboarding.",
+      "version": "0.1.1",
+      "description": "Maintain an evolving, source-linked engineering team knowledge book with dynamic organization, safe restructuring, and local-first onboarding.",
       "source": "./plugins/team-lib"
     },
     {
       "name": "managed-apps-team-icm-helper",
-      "description": "Shared IcM investigation memory, reusable Managed Apps knowledge, and DRI rotation handoffs.",
+      "version": "0.1.3",
+      "description": "Investigate Managed Apps incidents with a shared, source-linked notebook that preserves per-IcM evidence, learns product knowledge, and supports DRI rotation handoffs.",
       "source": "./plugins/managed-apps-team-icm-helper"
+    },
+    {
+      "name": "personal-assistant",
+      "version": "0.1.0",
+      "description": "A personal work partner with an evolving Markdown notebook that remembers conversations, applies corrections, and organizes current knowledge across topics.",
+      "source": "./plugins/personal-assistant"
     }
   ]
 }

@@ -1,0 +1,53 @@
+{
+  "name": "hojiwa-agents",
+  "plugins": [
+    {
+      "name": "daily-work-notebook",
+      "source": {
+        "source": "local",
+        "path": "./plugins/daily-work-notebook"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "team-lib",
+      "source": {
+        "source": "local",
+        "path": "./plugins/team-lib"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "managed-apps-team-icm-helper",
+      "source": {
+        "source": "local",
+        "path": "./plugins/managed-apps-team-icm-helper"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "personal-assistant",
+      "source": {
+        "source": "local",
+        "path": "./plugins/personal-assistant"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

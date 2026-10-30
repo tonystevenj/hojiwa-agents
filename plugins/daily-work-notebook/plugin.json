@@ -1,0 +1,7 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "daily-work-notebook",
+  "version": "0.2.1",
+  "description": "Maintain a personal, source-linked work notebook with WorkIQ evidence, user-reviewed additions, and access to all host-provided tools.",
+  "license": "MIT"
+}

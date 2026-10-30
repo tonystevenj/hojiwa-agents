@@ -21,8 +21,10 @@ The agent only manages the knowledge files currently available locally.
 No WorkIQ connection, personal notebook configuration, time-zone setting,
 database, scripts, hooks, scheduler, or MCP server is required. External sources
 can be read through available host tools when requested; local note-taking and
-questions work without them. This instruction-only package targets Copilot;
-the legacy `.claude-plugin` layout does not establish Claude runtime compatibility.
+questions work without them. This package provides a Copilot agent and a portable
+`team-lib` skill that reads the same full instructions.
+See the [compatibility guide](../../README.md#portable-discovery-and-compatibility)
+for Agent Plugins metadata, Codex discovery, updates, and runtime limits.
 
 ## Install or load locally
 
@@ -51,8 +53,10 @@ copilot --no-auto-update --plugin-dir ".\plugins\team-lib" plugin list
 ```
 
 The [marketplace manifest](../../.claude-plugin/marketplace.json) registers this
-package. The [plugin manifest](.claude-plugin/plugin.json) resolves `./agents`
-relative to the package. Runtime behavior is defined in
+package. The [legacy plugin manifest](.claude-plugin/plugin.json) resolves `./agents`
+relative to the package. The [portable manifest](plugin.json) declares standard metadata.
+Native Copilot discovery uses the matching copy under `com.github.copilot\agents\`.
+The [portable skill](skills/team-lib/SKILL.md) loads the full instructions in
 [agents/team-lib.agent.md](agents/team-lib.agent.md).
 
 ## First use
